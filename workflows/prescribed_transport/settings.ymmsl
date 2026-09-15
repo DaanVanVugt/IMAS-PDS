@@ -6,7 +6,7 @@ ymmsl_version: v0.2
 # cases/overrides/prescribed_transport_<shot>.ymmsl.
 
 resources:
-  prescribed_transport.equilibrium.nice: {threads: 2}
+  prescribed_transport.equilibrium.nice: {threads: 8}  # batch mode: chunks of slices in parallel
   prescribed_transport.equilibrium.recorder_equilibrium: {threads: 1}
 
 settings:

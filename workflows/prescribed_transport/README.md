@@ -12,14 +12,13 @@ than carried through `source`. NICE-inverse solves the free-boundary equilibrium
 slice; `sink` stores the resulting equilibrium and coil currents; `recorder_equilibrium` distills the
 same data (config: `visualization/nice_inv.py`) for the muscle3-dashboard.
 
-`equilibrium` is the `nice_inverse` submodel (defined in `workflow.ymmsl`): a load balancer
-in front of N NICE workers, plus `recorder_equilibrium` recording the load balancer's gathered output.
-The load balancer slices the trace, scatters per-slice calls over the workers, re-gauges
-psi, and gathers the results back in the original order. `recorder_equilibrium` records that gathered
-output rather than the raw workers' output directly: the workers (`nice`) have
-`multiplicity: [1]`, making them an instance set, and the generic recorder actor has no
-slot-addressing support, so it can only record from a genuine single-instance peer --
-which the load balancer is and a multiplicity worker is not, even at multiplicity 1.
+`equilibrium` is the `nice_inverse` submodel (defined in `workflow.ymmsl`): one NICE inverse
+actor that receives the whole trace and solves it in batch mode (chunks of consecutive slices in
+parallel over its threads, each slice warm-starting from its time neighbour; `batch_chunk_slices`
+overrides the default of one chunk per thread), plus `recorder_equilibrium` recording its output.
+The former load balancer (per-slice scatter over N workers) is gone; its psi re-gauging was a
+no-op here (the waveform editor already writes psi[-1] = psi_boundary) and stays in
+`inverse_convergence`, where the Picard state needs it.
 
 ## Running it
 
@@ -57,9 +56,9 @@ produced from DINA and machine-description sources.
 - The static machine description (wall, pf_passive, iron_core) and the coil-current seed
   (pf_active) never change across the pulse; they come from the scenario's machine-description
   entry, not from `source`.
-- `equilibrium` (the `nice_inverse` submodel) declares `multiplicity: [1]`, and
-  multiplicity cannot be overridden from a case, so there is currently one worker. The
-  load balancer's round-robin and reassembly paths have only been exercised at one worker.
+- `equilibrium.nice` runs with 8 threads (`settings.ymmsl` resources); batch mode uses them
+  for chunks of slices, so the solve time scales with the thread count up to the number of
+  slices.
 
 ## Input requirements
 
