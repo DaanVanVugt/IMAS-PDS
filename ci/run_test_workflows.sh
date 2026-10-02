@@ -77,10 +77,14 @@ EOF
 
   local run_dir snapshots
   run_dir="$(realpath "$runs")"
-  mapfile -t snapshots < <(ls "$run_dir"/snapshots/snapshot_*.ymmsl | sort)
-  (( ${#snapshots[@]} >= 3 )) || { echo "expected >= 3 snapshots in $run_dir/snapshots" >&2; return 1; }
+  # Mid-run snapshots, one per distinct simulation time, in time order. The at_end ones
+  # only hold "Final" snapshots and would resume at the very end.
+  mapfile -t snapshots < <(awk '$NF == "Intermediate" {print $2, FILENAME}' \
+    "$run_dir"/snapshots/snapshot_*.ymmsl | sort -n -u -k1,1 | cut -d' ' -f2)
+  (( ${#snapshots[@]} >= 3 )) || { echo "expected >= 3 intermediate snapshots in $run_dir/snapshots" >&2; return 1; }
+  # The resumed run needs checkpoints too: libmuscle 0.10 crashes on resume without them.
   slurm_run "$runs.resume.slurm.out" bin/pds-run-case.sbatch "$case_dir" \
-    "${snapshots[${#snapshots[@]} / 2]}"
+    "$case_dir/checkpoints.ymmsl" "${snapshots[${#snapshots[@]} / 2]}"
 }
 
 # RUN TEST FILES
