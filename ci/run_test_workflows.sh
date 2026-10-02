@@ -63,7 +63,7 @@ run_case_clean() {
 # Run a case with checkpointing, then resume a second run from the middle workflow snapshot.
 run_case_with_checkpoints() {
   local workflow="$1" shot="$2" every="$3"
-  local case_dir="cases/${workflow}_${shot}_checkpoints"
+  local case_dir="$PWD/cases/${workflow}_${shot}_checkpoints"
   bin/pds-create-case "$workflow" "$shot" "$case_dir"
   cat > "$case_dir/checkpoints.ymmsl" <<EOF
 ymmsl_version: v0.2
