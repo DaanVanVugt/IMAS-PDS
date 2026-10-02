@@ -26,11 +26,17 @@ export HDF5_USE_FILE_LOCKING=FALSE  # avoid spurious HDF5 locking failures on ne
 export SBATCH_PARTITION=sun_debug,vega_debug,sirius_debug
 export SLURM_PARTITION=sun_debug,vega_debug,sirius_debug
 
-# Run a job on Slurm and block until it ends. sbatch --wait exits with the job's exit code,
-# so a failed run still fails CI under set -e; the job log is printed either way.
+# Run a job script on Slurm and block until it ends. sbatch --wait exits with the job's exit
+# code, so a failed run still fails CI under set -e; the job log is printed either way.
+# Without a Slurm client on the agent, the script runs locally with bash instead.
 slurm_run() {
   local log="$1" status=0
   shift
+  if ! command -v sbatch >/dev/null; then
+    echo "slurm_run: sbatch not found, running $1 locally" >&2
+    bash "$@"
+    return
+  fi
   mkdir -p "$(dirname "$log")"
   sbatch --wait --output="$log" "$@" || status=$?
   cat "$log" || true
