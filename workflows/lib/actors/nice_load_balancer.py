@@ -86,13 +86,13 @@ def main() -> None:
     )
     while inst.reuse_instance():
         if inst.resuming():
-            state = inst.load_snapshot().data
+            snapshot = inst.load_snapshot().data
         if inst.should_init():
             traces = {lane: inst.receive(f"{lane}_in").data for lane in FWD_LANES}
             res = None
             done = 0
         else:
-            traces, res, done = state["traces"], state["res"], state["done"]
+            traces, res, done = snapshot["traces"], snapshot["res"], snapshot["done"]
             logger.info("nice_load_balancer: resuming at slice %d", done)
         times = _slice_times(traces["equilibrium"])
         n = len(times)

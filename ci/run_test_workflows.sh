@@ -44,9 +44,7 @@ run_actor_test_clean() {
   local test_name="$1"
   rm -rf "cases/runs/$test_name"
   mkdir -p "cases/runs/$test_name"
-  slurm_run "cases/runs/$test_name.slurm.out" -J "$test_name" -A iter --nodes=1 --ntasks=1 \
-    --cpus-per-task=8 --time=00:30:00 \
-    --wrap "muscle_manager --start-all --run-dir cases/runs/$test_name ymmsl_files/$test_name.ymmsl"
+  muscle_manager --start-all --run-dir "cases/runs/$test_name" "ymmsl_files/$test_name.ymmsl"
 }
 
 run_case_clean() {
