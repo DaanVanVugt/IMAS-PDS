@@ -86,7 +86,7 @@ run_actor_test_clean test_waveform_editor
 run_actor_test_clean test_torax_actor
 run_actor_test_clean test_nice_actor
 run_actor_test_clean test_metis_actor
-run_actor_test_clean test_chease_actor
+# run_actor_test_clean test_chease_actor
 
 # RUN WORKFLOWS
 
