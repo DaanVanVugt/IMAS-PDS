@@ -22,23 +22,23 @@ def handle_args():
     )
     parser.add_argument("--shot_nr", type=str, help="Shot number")
     parser.add_argument(
-        "--dina_uri",
+        "--dina_path",
         type=str,
-        help="URI to load raw DINA scenario data from (reference Ip and PF coil current)",
+        help="Path to load raw DINA scenario data from (reference Ip and PF coil current)",
     )
     parser.add_argument(
-        "--reconstruction_uri",
+        "--reconstruction_path",
         type=str,
         help=(
-            "URI to load the NICE-reconstructed equilibrium the workflow's `source` actor "
+            "Path to load the NICE-reconstructed equilibrium the workflow's `source` actor "
             "reads (reference R, Z -- waveform_editor never overlays geometric_axis, so "
             "this is the actual reference the controller solves against)"
         ),
     )
     parser.add_argument(
-        "--nice_uri",
+        "--nice_path",
         type=str,
-        help="URI to load evolutive_controller's NICE output from",
+        help="Path to load evolutive_controller's NICE output from",
     )
     parser.add_argument(
         "--output_dir", type=str, help="path to directory in which to put plots"
@@ -88,9 +88,9 @@ def main():
     """Plot evolutive_controller reference-vs-NICE validation figures"""
     args = handle_args()
     dbs = {
-        "dina": DBEntry(f"imas:hdf5?path={args.dina_uri}", "r"),
-        "reconstruction": DBEntry(f"imas:hdf5?path={args.reconstruction_uri}", "r"),
-        "nice": DBEntry(f"imas:hdf5?path={args.nice_uri}", "r"),
+        "dina": DBEntry(f"imas:hdf5?path={args.dina_path}", "r"),
+        "reconstruction": DBEntry(f"imas:hdf5?path={args.reconstruction_path}", "r"),
+        "nice": DBEntry(f"imas:hdf5?path={args.nice_path}", "r"),
     }
 
     rz_ip_plot(args, dbs)
