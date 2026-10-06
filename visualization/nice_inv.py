@@ -220,7 +220,7 @@ class Plotter(BasePlotter):
         self._contour_cache_times = times
 
     @param.depends("levels", watch=True)
-    def _clear_contour_cache_on_levels(self) -> None: 
+    def _clear_contour_cache_on_levels(self) -> None:
         self._contour_cache.clear()
 
     def get_dashboard(self):
