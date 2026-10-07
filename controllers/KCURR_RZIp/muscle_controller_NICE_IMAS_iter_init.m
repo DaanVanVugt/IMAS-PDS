@@ -142,4 +142,10 @@ if instance.reuse_instance()
     plasma_duration=t_max-t_start;
 
     fprintf(['\nControl over! ' num2str(simulation_time) 's of simulation for ' num2str(plasma_duration) 's of plasma.\n']);
+
+    % A clean next_timestamp=None ending leaves nice_evo_rd/sink_control waiting for our
+    % ClosePort; this last reuse_instance() returns false and sends it, then deregisters.
+    if exist('nice_sent_final_message', 'var') && nice_sent_final_message
+        instance.reuse_instance();
+    end
 end
